@@ -75,8 +75,13 @@ echo.
 echo ---- Parsed Fields ----
 powershell -NoProfile -Command ^
     "try { $j = Get-Content -Raw '%OUTPUT_FILE%' | ConvertFrom-Json; " ^
-    "$j.PSObject.Properties | ForEach-Object { Write-Output ($_.Name + ': ' + $_.Value) } } " ^
-    "catch { Write-Output 'ERROR: Could not parse fields' }"
+    "$j.PSObject.Properties | ForEach-Object { " ^
+    "    if ($_.Value -is [System.Array]) { " ^
+    "        Write-Output ($_.Name + ': [Array with ' + $_.Value.Count + ' items]') " ^
+    "    } else { " ^
+    "        Write-Output ($_.Name + ': ' + $_.Value) " ^
+    "    } " ^
+    "} } catch { Write-Output 'ERROR: Could not parse fields' }"
 
 :: ---- Count records fetched ----
 echo.

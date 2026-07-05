@@ -5,13 +5,11 @@ setlocal enabledelayedexpansion
 :: api-fetch.bat - GET an API endpoint, save formatted JSON
 :: ==========================================================
 
-
 echo ===============================================
 echo   API Response Fetcher and JSON Formatter v1.0
-echo   Author: 
+echo   Author: Abraham-Surf
 echo ===============================================
 echo.
-
 
 :: ---- Get URL from argument, or prompt if not provided ----
 set "API_URL=%~1"
@@ -79,6 +77,24 @@ powershell -NoProfile -Command ^
     "try { $j = Get-Content -Raw '%OUTPUT_FILE%' | ConvertFrom-Json; " ^
     "$j.PSObject.Properties | ForEach-Object { Write-Output ($_.Name + ': ' + $_.Value) } } " ^
     "catch { Write-Output 'ERROR: Could not parse fields' }"
+
+:: ---- Count records fetched ----
+echo.
+echo ---- Record Count ----
+powershell -NoProfile -Command ^
+    "try { " ^
+    "$j = Get-Content -Raw '%OUTPUT_FILE%' | ConvertFrom-Json; " ^
+    "if ($j -is [System.Array]) { " ^
+    "    Write-Output ('Records found: ' + $j.Count) " ^
+    "} else { " ^
+    "    $arrayProp = $j.PSObject.Properties | Where-Object { $_.Value -is [System.Array] } | Select-Object -First 1; " ^
+    "    if ($arrayProp) { " ^
+    "        Write-Output ('Records found in \"' + $arrayProp.Name + '\": ' + $arrayProp.Value.Count) " ^
+    "    } else { " ^
+    "        Write-Output 'Records found: 1 (single object response)' " ^
+    "    } " ^
+    "} " ^
+    "} catch { Write-Output 'Could not determine record count' }"
 
 del "%RAW_FILE%" >nul 2>&1
 endlocal

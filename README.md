@@ -19,7 +19,6 @@ api-fetch.bat "https://api.example.com/status?key=abc&format=json"
 
 What You Get
 
-
 A file called api_response.json — the response, neatly formatted and
 easy to read
 A quick summary printed on screen showing each field and its value
@@ -31,6 +30,8 @@ If the API needs a login token, open the script in Notepad and update this
 line with your token:
 
 set "AUTH_HEADER=Authorization: Bearer YOUR_TOKEN_HERE"
+example:
+set "AUTH_HEADER=Authorization: Bearer abc123XYZ34534534"
 
 If no token is needed, just delete that line.
 
